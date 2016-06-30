@@ -25,8 +25,9 @@ namespace Serilog.Sinks.SignalR
     /// </summary>
     public class SignalRSink : PeriodicBatchingSink
     {
-        readonly IFormatProvider _formatProvider;
-        readonly IHubContext _context;
+        private readonly IFormatProvider _formatProvider;
+        private readonly IHubContext _context;
+        private readonly Action<IHubContext,LogEvent> _action;
         /// <summary>
         /// A reasonable default for the number of events posted in
         /// each batch.
@@ -45,13 +46,15 @@ namespace Serilog.Sinks.SignalR
         /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
         /// <param name="period">The time to wait between checking for event batches.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
-        public SignalRSink(IHubContext context, int batchPostingLimit, TimeSpan period, IFormatProvider formatProvider)
+        /// <param name="logAction">Action on each logevent. Customize a specific client method or SignalR group that the event must be sent.</param>
+        public SignalRSink(IHubContext context, int batchPostingLimit, TimeSpan period, IFormatProvider formatProvider, Action<IHubContext,LogEvent> logAction = null)
             : base(batchPostingLimit, period)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             _formatProvider = formatProvider;
             _context = context;
+            _action = logAction ?? ((ctx, logevent) => ctx.Clients.All.sendLogEvent(logevent));
         }
 
         /// <summary>
@@ -66,9 +69,7 @@ namespace Serilog.Sinks.SignalR
             // PeriodicBatchingSink to manage the worker thread; requires some consideration.
 
             foreach (var logEvent in events)
-            {
-                _context.Clients.All.sendLogEvent(new LogEvent(logEvent, logEvent.RenderMessage(_formatProvider)));
-            }
+                _action(_context, new LogEvent(logEvent, logEvent.RenderMessage(_formatProvider)));
         }
     }
 }

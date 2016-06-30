@@ -3,6 +3,7 @@ using Microsoft.AspNet.SignalR;
 using Serilog.Configuration;
 using Serilog.Events;
 using Serilog.Sinks.SignalR;
+using LogEvent = Serilog.Sinks.SignalR.Data.LogEvent;
 
 // Copyright 2014 Serilog Contributors
 // 
@@ -34,6 +35,7 @@ namespace Serilog
         /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
         /// <param name="period">The time to wait between checking for event batches.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
+        /// <param name="action">Action on each logevent. Customize a specific client method or SignalR group that the event must be sent.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration SignalR(
@@ -42,14 +44,14 @@ namespace Serilog
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             int batchPostingLimit = SignalRSink.DefaultBatchPostingLimit,
             TimeSpan? period = null,
-            IFormatProvider formatProvider = null)
+            IFormatProvider formatProvider = null, Action<IHubContext, LogEvent> action = null)
         {
-            if (loggerConfiguration == null) throw new ArgumentNullException("loggerConfiguration");
-            if (context == null) throw new ArgumentNullException("context");
+            if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             var defaultedPeriod = period ?? SignalRSink.DefaultPeriod;
             return loggerConfiguration.Sink(
-                new SignalRSink(context, batchPostingLimit, defaultedPeriod, formatProvider),
+                new SignalRSink(context, batchPostingLimit, defaultedPeriod, formatProvider,action),
                 restrictedToMinimumLevel);
         }
     }
