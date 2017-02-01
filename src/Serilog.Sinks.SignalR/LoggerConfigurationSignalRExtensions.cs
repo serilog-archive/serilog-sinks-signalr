@@ -26,7 +26,7 @@ namespace Serilog
     public static class LoggerConfigurationSignalRExtensions
     {
         /// <summary>
-        /// Adds a sink that writes log events as documents to a SignalR hub. 
+        /// Adds a sink that writes log events as documents to a SignalR server. 
         /// </summary>
         /// <param name="loggerConfiguration">The logger configuration.</param>
         /// <param name="context">The hub context.</param>
@@ -39,7 +39,7 @@ namespace Serilog
         /// <param name="excludedConnectionIds">Signalr connection ID's to exclude from broadcast.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-        public static LoggerConfiguration SignalR(
+        public static LoggerConfiguration SignalRServer(
             this LoggerSinkConfiguration loggerConfiguration,
             IHubContext context,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
@@ -73,7 +73,7 @@ namespace Serilog
         /// <param name="userIds">ID's of the Signalr Users you are broadcasting the log event to. Default is All Users.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-        public static LoggerConfiguration SignalRClient(
+        public static LoggerConfiguration SignalRHub(
             this LoggerSinkConfiguration loggerConfiguration,
             string url,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
