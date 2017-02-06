@@ -4,7 +4,7 @@
 
 A Serilog sink that writes events to a SignalR Hub
 
-## Configuration from hub server application
+## Configuration from hub application
 
 From within the SignalR server application with a hub named MyHub:
 
@@ -13,7 +13,7 @@ var hubContext = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
 
 Log.Logger = new LoggerConfiguration()
 .MinimumLevel.Verbose()
-.WriteTo.SignalRServer(hubContext,
+.WriteTo.SignalR(hubContext,
   Serilog.Events.LogEventLevel.Information,
   groupNames: new[] { "CustomGroup"}, // default is null
   userIds: new[] { "JaneD1234" }, // default is null
@@ -28,7 +28,7 @@ From any client application with a hub hosted at `http://localhost:8080` and a h
 ```csharp
 Log.Logger = new LoggerConfiguration()
 .MinimumLevel.Verbose()
-.WriteTo.SignalRHub("http://localhost:8080",
+.WriteTo.SignalRClient("http://localhost:8080",
   Serilog.Events.LogEventLevel.Information,
   hub: "MyHub" // default is LogHub
   groupNames: new[] { "CustomGroup"}, // default is null
