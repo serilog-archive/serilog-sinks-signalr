@@ -41,7 +41,7 @@ Create a hub class with any name that ends in `Hub` or use the default name `Log
 ```csharp
 public class MyHub : Hub
 {
-  public void receiveLogEvent(string[] groups, string[] userIds, Serilog.Sinks.SignalR.Data.LogEvent logEvent)
+  public void receiveLogEvent(string[] groups, string[] users, Serilog.Sinks.SignalR.Data.LogEvent logEvent)
   {
     // send to all clients
     Clients.All.sendLogEvent(logEvent);
